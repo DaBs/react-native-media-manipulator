@@ -39,7 +39,6 @@
 ```javascript
 import RNMediaManipulator from 'react-native-media-manipulator';
 
-// TODO: What to do with the module?
 RNMediaManipulator.mergeImages({
   uri: 'https://example.com/image.png',
   width: 1000, // height of final image
