@@ -1,13 +1,13 @@
 
-# react-native-react-native-media-manipulator
+# react-native-media-manipulator
 
 ## Getting started
 
-`$ npm install react-native-react-native-media-manipulator --save`
+`$ npm install react-native-media-manipulator --save`
 
 ### Mostly automatic installation
 
-`$ react-native link react-native-react-native-media-manipulator`
+`$ react-native link react-native-media-manipulator`
 
 ### Manual installation
 
