@@ -17,7 +17,6 @@ public class RNMediaManipulatorPackage implements ReactPackage {
       return Arrays.<NativeModule>asList(new RNMediaManipulatorModule(reactContext));
     }
 
-    @Override
     public List<Class<? extends JavaScriptModule>> createJSModules() {
       return Collections.emptyList();
     }
