@@ -12,11 +12,15 @@ RCT_EXPORT_MODULE();
 RCT_EXPORT_METHOD(mergeImages:(NSDictionary *)backgroundObj imageObjs:(NSArray *)imageObjs resolver:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject) {
 
+    NSString *mirrored = backgroundObj[@"mirrored"];
     NSURL *backgroundUrl = [NSURL URLWithString:backgroundObj[@"uri"]];
     NSNumber *backgroundWidth = backgroundObj[@"width"];
     NSNumber *backgroundHeight = backgroundObj[@"height"];
     NSData *backgroundData = [NSData dataWithContentsOfURL:backgroundUrl];
     UIImage *backgroundImage = [[UIImage alloc] initWithData:backgroundData];
+    if (mirrored && [mirrored  isEqual: @"true"]) {
+        backgroundImage = [UIImage imageWithCGImage:backgroundImage.CGImage scale:backgroundImage.scale orientation:UIImageOrientationLeftMirrored];
+    }
     backgroundImage = [self imageByScalingProportionallyToSize:backgroundImage targetSize:CGSizeMake(backgroundWidth.floatValue, backgroundHeight.floatValue)];
     backgroundWidth = [NSNumber numberWithDouble:backgroundImage.size.width];
     backgroundHeight = [NSNumber numberWithDouble:backgroundImage.size.height];
@@ -41,12 +45,17 @@ RCT_EXPORT_METHOD(mergeImages:(NSDictionary *)backgroundObj imageObjs:(NSArray *
         NSNumber *height = [NSNumber numberWithDouble:image.size.height];
         if ([imageObj objectForKey:@"width"]) width = imageObj[@"width"];
         if ([imageObj objectForKey:@"height"]) height = imageObj[@"height"];
-        image = [self imageByScalingProportionallyToSize:image targetSize:CGSizeMake(width.doubleValue * scale.floatValue, height.doubleValue * scale.floatValue)];
+        NSNumber *scaledWidth = [NSNumber numberWithFloat:width.floatValue*scale.floatValue];
+        NSNumber *scaledHeight = [NSNumber numberWithFloat:height.floatValue*scale.floatValue];
+        image = [self imageByScalingProportionallyToSize:image targetSize:CGSizeMake(scaledWidth.floatValue, scaledHeight.floatValue)];
         image = [self imageRotatedByDegrees:image floatDegrees:rotate.floatValue];
         
+        NSNumber *actualX = [NSNumber numberWithFloat:(positionX.floatValue + width.floatValue / 2 - image.size.width / 2)];
+        NSNumber *actualY = [NSNumber numberWithFloat:(positionY.floatValue + height.floatValue / 2 - image.size.height / 2)];
+        
         [image drawInRect:CGRectMake(
-                                     (positionX.floatValue + width.floatValue/2) - image.size.width/2,
-                                     (positionY.floatValue + height.floatValue/2) - image.size.height/2,
+                                     actualX.floatValue,
+                                     actualY.floatValue,
                                      image.size.width,
                                      image.size.height
                                      )];

@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.util.Base64;
 import android.util.Log;
@@ -41,8 +42,8 @@ public class RNMediaManipulatorModule extends ReactContextBaseJavaModule {
 
     @Override
     public String getName() {
-    return "RNMediaManipulator";
-  }
+        return "RNMediaManipulator";
+    }
 
     @ReactMethod
     public void mergeImages(ReadableMap backgroundObj, ReadableArray imageObjs, Promise promise) {
@@ -59,10 +60,11 @@ public class RNMediaManipulatorModule extends ReactContextBaseJavaModule {
             Integer backgroundHeight = (int) backgroundObj.getDouble("height");
             Bitmap backgroundImage = BitmapFactory.decodeStream(backgroundImageUrl.openConnection().getInputStream(), null, options);
             Integer originalScale = backgroundWidth/backgroundImage.getWidth();
-            Bitmap scaledBackgroundImage = Bitmap.createScaledBitmap(backgroundImage, backgroundWidth, backgroundHeight, false);
+            Bitmap scaledBackgroundImage = resize(backgroundImage, backgroundWidth, backgroundHeight);
+            Number difference = (backgroundHeight - scaledBackgroundImage.getHeight()) / 2;
             Bitmap backgroundCanvasImage = Bitmap.createBitmap(backgroundWidth, backgroundHeight, Bitmap.Config.ARGB_8888);
             Canvas canvas = new Canvas(backgroundCanvasImage);
-            canvas.drawBitmap(scaledBackgroundImage, new Matrix(), null);
+            canvas.drawBitmap(scaledBackgroundImage, 0, difference.intValue(), null);
 
             for (int i = 0; i < imageObjs.size(); i++) {
                 ReadableMap imageObj = imageObjs.getMap(i);
@@ -108,7 +110,7 @@ public class RNMediaManipulatorModule extends ReactContextBaseJavaModule {
 
                 matrix.postScale(scale.floatValue(), scale.floatValue());
 
-                picture = Bitmap.createScaledBitmap(picture, Math.round(imageWidth.floatValue()*scale.floatValue()), Math.round(imageHeight.floatValue()*scale.floatValue()), true);
+                picture = Bitmap.createScaledBitmap(picture, imageWidth.intValue(), imageHeight.intValue(), true);
                 picture = Bitmap.createBitmap(picture, 0, 0, picture.getWidth(), picture.getHeight(), matrix, true);
 
                 Paint paint = new Paint();
@@ -134,6 +136,27 @@ public class RNMediaManipulatorModule extends ReactContextBaseJavaModule {
         }
 
 
+    }
+
+    private static Bitmap resize(Bitmap image, int maxWidth, int maxHeight) {
+        if (maxHeight > 0 && maxWidth > 0) {
+            int width = image.getWidth();
+            int height = image.getHeight();
+            float ratioBitmap = (float) width / (float) height;
+            float ratioMax = (float) maxWidth / (float) maxHeight;
+
+            int finalWidth = maxWidth;
+            int finalHeight = maxHeight;
+            if (ratioMax > 1) {
+                finalWidth = (int) ((float)maxHeight * ratioBitmap);
+            } else {
+                finalHeight = (int) ((float)maxWidth / ratioBitmap);
+            }
+            image = Bitmap.createScaledBitmap(image, finalWidth, finalHeight, true);
+            return image;
+        } else {
+            return image;
+        }
     }
 
 }
