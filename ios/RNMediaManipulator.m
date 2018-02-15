@@ -1,6 +1,6 @@
-
-#import <UIKit/UIKit.h>
 #import "RNMediaManipulator.h"
+#import <UIKit/UIKit.h>
+#import <React/RCTBridgeModule.h>
 
 
 @implementation RNMediaManipulator
