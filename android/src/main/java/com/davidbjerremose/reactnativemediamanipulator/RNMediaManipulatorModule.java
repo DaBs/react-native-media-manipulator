@@ -29,6 +29,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 
+
 public class RNMediaManipulatorModule extends ReactContextBaseJavaModule {
 
     private static final String TAG = "RNMediaManipulator";
@@ -59,6 +60,12 @@ public class RNMediaManipulatorModule extends ReactContextBaseJavaModule {
             Integer backgroundWidth = (int) backgroundObj.getDouble("width");
             Integer backgroundHeight = (int) backgroundObj.getDouble("height");
             Bitmap backgroundImage = BitmapFactory.decodeStream(backgroundImageUrl.openConnection().getInputStream(), null, options);
+
+            if (backgroundObj.hasKey("rotation")) {
+                Integer rotation = (int) backgroundObj.getInt("rotation");
+                backgroundImage = rotateImage(backgroundImage, rotation);
+            }
+
             Integer originalScale = backgroundWidth/backgroundImage.getWidth();
             Bitmap scaledBackgroundImage = resize(backgroundImage, backgroundWidth, backgroundHeight);
             Number difference = (backgroundHeight - scaledBackgroundImage.getHeight()) / 2;
@@ -157,6 +164,13 @@ public class RNMediaManipulatorModule extends ReactContextBaseJavaModule {
         } else {
             return image;
         }
+    }
+
+    private static Bitmap rotateImage(Bitmap source, float angle) {
+        Matrix matrix = new Matrix();
+        matrix.postRotate(angle);
+        return Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(),
+                matrix, true);
     }
 
 }
