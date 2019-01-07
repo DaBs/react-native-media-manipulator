@@ -26,7 +26,7 @@ RCT_EXPORT_METHOD(mergeImages:(NSDictionary *)backgroundObj imageObjs:(NSArray *
     backgroundHeight = [NSNumber numberWithDouble:backgroundImage.size.height];
     CGSize backgroundSize = CGSizeMake(backgroundWidth.floatValue, backgroundHeight.floatValue);
     
-    UIGraphicsBeginImageContextWithOptions(backgroundSize, true, 0.0);
+    UIGraphicsBeginImageContextWithOptions(backgroundSize, true, 1.0);
     
     [backgroundImage drawInRect:CGRectMake(0, 0, backgroundWidth.floatValue, backgroundHeight.floatValue)];
 
